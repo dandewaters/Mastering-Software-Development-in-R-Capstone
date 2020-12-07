@@ -1,0 +1,109 @@
+---
+title: "introduction"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(msdirCapstone)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+```
+
+# Introduction
+
+This package contains functions for reading, cleaning, and plotting the NOAA earthquake dataset. The plotting functions include `geom_timeline()`, `geom_timline_label()`, and `eq_map()`.
+
+# Read and Clean data
+
+Let's gather some earthquake observations to plot. First, we can use the `eq_read_data()` function to read in the NOAA earthquake data.
+
+```{r read, eval=FALSE}
+data <- 
+  eq_read_data("../inst/extdata/earthquakes.tsv")
+```
+
+Then we can use the `eq_clean_data()` to clean the data. This function converts all the column names to snake_case, cleans the date and GPS coordinate columns, removes unnecessary columns and the tsunami/volcano observations from the data frame.
+
+```{r clean, eval=FALSE}
+data <- 
+  eq_read_data("../inst/extdata/earthquakes.tsv") %>%
+  eq_clean_data()
+```
+
+Now that the data is read in and cleaned, let's gather the earthquake observations from 2010 to 2020 in the US and Mexico.
+
+```{r get_observations}
+min_date <- ymd("2010-01-01")
+max_date <- ymd("2020-01-01")
+countries <- c("US", "MEXICO")
+
+data <- 
+  eq_read_data("../inst/extdata/earthquakes.tsv") %>%
+  eq_clean_data() %>%
+  filter(date >= min_date & date <= max_date & country %in% countries)
+```
+
+# Plot Data
+## geom_timeline
+`geom_timeline()` is a ggplot2 extension that plots a timeline of earthquake events. The user can make the size and color of the points on the timeline correspond to earthquake attributes like magnitude and death toll. In the following example, we will plot magnitude to the point size and death toll to point color.
+
+
+```{r plot_geom_timeline}
+data %>%  
+  ggplot(aes(x=date, size=magnitude, fill=deaths, color=deaths)) +
+  geom_timeline()
+```
+
+We can also plot multiple timelines, one for each country. We can do this by assigning the `country` column to the `y` aesthetic in our `ggplot` call.
+
+```{r plot_mutliple_timelines}
+data %>%  
+  ggplot(aes(x=date, y=country,
+             size=magnitude, fill=deaths, color=deaths)) +
+  geom_timeline()
+```
+
+## geom_timeline_label
+
+`geom_timeline_label()` is the same as `geom_timeline()` except it can add a label to the top n earthquakes by a measure of magnitude or death toll. In the following example, let's label the 5 earthquakes with the highest magnitudes.
+
+```{r plot_geom_timeline_label}
+data %>%
+  ggplot(aes(x=date, label=location_name,
+             size=magnitude, fill=deaths,
+             color=deaths, n_max=5)) +
+  geom_timeline_label()
+```
+
+`geom_timeline_label()` can also plot multiple timelines like `geom_timeline()`.
+
+## eq_map
+
+`eq_map()` creates an interactive leaflet map that plots points at the epicenter of each earthquake observations. The user can optionally chose a column that will be used as a popup label for each point. Colors and size of points also correspond to magnitude and death toll of each earthquake observation like `geom_timeline()` and `geom_timeline_label()`.
+
+```{r plot_eq_map}
+data %>%
+  eq_map(annot_col = "date")
+```
+
+## eq_create_label
+
+The `eq_create_label()` function creates custom HTML labels for each point to include more information on each earthquake point on the map. This function takes in the location_name, magnitude, and deaths columns, compiles the information from each column into a nice HTML string, and adds that string to a `label` column in the data frame. You can then pass that label column to the `annot_col` argument in the `eq_map()` call. 
+
+```{r eq_map_with_annotations}
+data %>%
+  eq_create_label() %>%
+  eq_map(annot_col = "label")
+```
