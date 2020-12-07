@@ -1,11 +1,27 @@
 Package: msdirCapstone
 Type: Package
-Title: What the Package Does (Title Case)
+Title: NOAA dataset visualizations
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Daniel DeWaters
+Maintainer: Daniel DeWaters <dandewaters@gmail.com>
+Description: Contains functions for reading, cleaning, and making data
+    visualizations for the NOAA earthquakes dataset. Capstone project for the
+    Mastering Sofware Development in R Specialization provided by Johns Hopkins
+    University on Coursera.
+License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 7.1.1
+Imports:
+    dplyr,
+    ggplot2,
+    leaflet,
+    lubridate,
+    magrittr,
+    readr,
+    stringr,
+    tidyr
+Suggests: knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
