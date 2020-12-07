@@ -4,6 +4,10 @@
 
 This is my submission for the capstone project for the Mastering Software Development in R Specialization provided by Johns Hopkins University on Coursera. For this project, we were tasked to create a package with functions to read, clean, and plot NOAA's earthquake dataset.
 
+<!-- badges: start -->
+  [![Travis build status](https://travis-ci.com/dandewaters/Mastering-Software-Development-in-R-Capstone.svg?branch=master)](https://travis-ci.com/dandewaters/Mastering-Software-Development-in-R-Capstone)
+<!-- badges: end -->
+
 ## Installation
  
 To install, make sure you have the [devtools package](https://cran.r-project.org/package=devtools) installed and loaded. Then run the following commands:
